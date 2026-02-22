@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Sentiment Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:       #080b12;
+      --surface:  #0d1117;
+      --surface2: #131921;
+      --surface3: #1a2233;
+      --border:   #1e2a3a;
+      --border2:  #253347;
+      --text:     #c9d4e8;
+      --text-dim: #5a6a85;
+      --text-bright: #eaf0ff;
+      --cyan:     #00d4ff;
+      --green:    #00e676;
+      --amber:    #ffab00;
+      --red:      #ff3d71;
+      --purple:   #8b5cf6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,212,255,0.015) 2px,
+        rgba(0,212,255,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Auth screen */
+    #authScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, #0a1628 0%, var(--bg) 100%);
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 60px rgba(0,212,255,0.06);
+    }
+
+    .auth-card h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 0.3rem;
+    }
+
+    .auth-card p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .inp {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .inp:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
+
+    .btn-primary-custom {
+      width: 100%;
+      background: var(--cyan);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary-custom:hover { opacity: 0.88; }
+
+    /* Dashboard layout */
+    #dashboard { display: none; }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      letter-spacing: 0.05em;
+    }
+
+    .logo .accent { color: var(--cyan); }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pulse-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: glow 1.8s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 4px var(--green); opacity: 1; }
+      50% { box-shadow: 0 0 10px var(--green); opacity: 0.6; }
+    }
+
+    .content { padding: 1.5rem; }
+
+    /* Stat cards */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .stat-card.c-cyan::before { background: var(--cyan); }
+    .stat-card.c-green::before { background: var(--green); }
+    .stat-card.c-amber::before { background: var(--amber); }
+    .stat-card.c-red::before { background: var(--red); }
+    .stat-card.c-purple::before { background: var(--purple); }
+
+    .stat-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--text-bright); line-height: 1; font-family: 'JetBrains Mono', monospace; }
+
+    /* Type tabs */
+    .type-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .type-tab {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+
+    .type-tab:hover { border-color: var(--border2); color: var(--text); }
+    .type-tab.active { background: var(--surface3); border-color: var(--cyan); color: var(--cyan); }
+
+    /* Panel grid */
+    .panel-grid { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 900px) { .panel-grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 0.85rem 1.1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: 0.6rem 1rem; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; border-bottom: 1px solid var(--border); text-align: left; }
+    td { padding: 0.7rem 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    .badge-type {
+      display: inline-block;
+      padding: 0.18rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-driver  { background: rgba(0,212,255,0.12); color: var(--cyan); }
+    .badge-trip    { background: rgba(139,92,246,0.15); color: var(--purple); }
+    .badge-app     { background: rgba(255,171,0,0.12); color: var(--amber); }
+    .badge-marshal { background: rgba(0,230,118,0.12); color: var(--green); }
+
+    .badge-sentiment {
+      display: inline-block;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .badge-positive { background: rgba(0,230,118,0.12); color: var(--green); }
+    .badge-neutral  { background: rgba(255,171,0,0.12); color: var(--amber); }
+    .badge-negative { background: rgba(255,61,113,0.12); color: var(--red); }
+
+    .score-bar-wrap { display: flex; align-items: center; gap: 0.6rem; }
+    .score-num { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.88rem; min-width: 2.5rem; }
+    .score-bar { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+    .trend-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      color: var(--cyan);
+      font-size: 0.72rem;
+      padding: 0.25rem 0.55rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.15s;
+    }
+
+    .trend-btn:hover { background: rgba(0,212,255,0.08); }
+
+    /* Charts */
+    .chart-panel { padding: 1rem; display: flex; align-items: center; justify-content: center; }
+
+    .trend-panel-full {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    /* Type breakdown row */
+    .type-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .type-breakdown-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .type-breakdown-card .tbc-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem; }
+    .type-breakdown-card .tbc-value { font-size: 1.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--text-bright); }
+    .type-breakdown-card .tbc-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.2rem; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 0.85rem; }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    #lastUpdated { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); }
+
+    .rank-num { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<!-- Auth -->
+<div id="authScreen">
+  <div class="auth-card">
+    <h2>Admin Console</h2>
+    <p>Feedback Sentiment Platform — Enter your API key to continue.</p>
+    <input type="password" class="inp" id="apiKeyInput" placeholder="x-api-key" onkeydown="if(event.key==='Enter')initDashboard()" />
+    <button class="btn-primary-custom" onclick="initDashboard()">Access Dashboard</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+
+  <div class="topbar">
+    <div class="logo">SENTIMENT<span class="accent">.</span>PLATFORM</div>
+    <div class="d-flex align-items-center gap-3">
+      <span id="lastUpdated"></span>
+      <div class="live-badge">
+        <div class="pulse-dot"></div>
+        LIVE · 5s
+      </div>
+      <a href="/index.html" style="font-size:0.75rem;color:var(--text-dim);text-decoration:none;">← Submit Feedback</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stat Cards -->
+    <div class="stat-grid">
+      <div class="stat-card c-cyan">
+        <div class="stat-label">Total Entities</div>
+        <div class="stat-value" id="statEntities">—</div>
+      </div>
+      <div class="stat-card c-green">
+        <div class="stat-label">Total Feedback</div>
+        <div class="stat-value" id="statFeedback">—</div>
+      </div>
+      <div class="stat-card c-green">
+        <div class="stat-label">Positive</div>
+        <div class="stat-value" id="statPositive">—</div>
+      </div>
+      <div class="stat-card c-amber">
+        <div class="stat-label">Neutral</div>
+        <div class="stat-value" id="statNeutral">—</div>
+      </div>
+      <div class="stat-card c-red">
+        <div class="stat-label">Negative</div>
+        <div class="stat-value" id="statNegative">—</div>
+      </div>
+    </div>
+
+    <!-- Type Breakdown -->
+    <div class="type-breakdown" id="typeBreakdown"></div>
+
+    <!-- Type Filter Tabs -->
+    <div class="type-tabs" id="typeTabs">
+      <div class="type-tab active" data-type="all" onclick="setFilter('all', this)">All Types</div>
+      <div class="type-tab" data-type="driver"  onclick="setFilter('driver', this)">🚗 Driver</div>
+      <div class="type-tab" data-type="trip"    onclick="setFilter('trip', this)">🗺️ Trip</div>
+      <div class="type-tab" data-type="app"     onclick="setFilter('app', this)">📱 App</div>
+      <div class="type-tab" data-type="marshal" onclick="setFilter('marshal', this)">🦺 Marshal</div>
+    </div>
+
+    <!-- Leaderboard + Pie Chart -->
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <span>Entity Leaderboard</span>
+          <span id="leaderboardCount" style="font-weight:400;font-family:'JetBrains Mono',monospace;">—</span>
+        </div>
+        <div style="overflow:auto; max-height:420px;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Entity ID</th>
+                <th>Avg Score</th>
+                <th>Reviews</th>
+                <th>Sentiment</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <tr><td colspan="7"><div class="empty-state"><div class="icon">⏳</div>Loading...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Sentiment Distribution</div>
+        <div class="chart-panel" style="min-height:280px;">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trend Chart -->
+    <div class="trend-panel-full">
+      <div class="panel-header">
+        <span>Score Trend — <span id="trendLabel" style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">select an entity</span></span>
+        <button onclick="clearTrend()" style="background:none;border:1px solid var(--border2);color:var(--text-dim);border-radius:5px;padding:0.2rem 0.6rem;font-size:0.7rem;cursor:pointer;">Clear</button>
+      </div>
+      <div style="padding:1rem;">
+        <canvas id="lineChart" style="max-height:180px;"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let API_KEY = '';
+let pieChart = null;
+let lineChart = null;
+let refreshTimer = null;
+let currentFilter = 'all';
+
+function initDashboard() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return alert('Please enter your API key');
+  API_KEY = key;
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  initCharts();
+  loadAll();
+  refreshTimer = setInterval(loadAll, 5000);
+}
+
+function apiFetch(url) {
+  return fetch(url, { headers: { 'x-api-key': API_KEY } }).then(r => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  });
+}
+
+async function loadAll() {
+  try {
+    const typeParam = currentFilter !== 'all' ? `?type=${currentFilter}` : '';
+    const [overview, entitiesResp] = await Promise.all([
+      apiFetch('/admin/overview'),
+      apiFetch(`/admin/entities${typeParam}`)
+    ]);
+
+    renderStats(overview);
+    renderTypeBreakdown(overview.byType);
+    renderLeaderboard(entitiesResp.entities);
+    updatePieChart(overview.distribution);
+    document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+  } catch (e) {
+    console.error('Refresh error:', e);
+    if (e.message.includes('401')) {
+      clearInterval(refreshTimer);
+      alert('Invalid API key.');
+    }
+  }
+}
+
+function renderStats(data) {
+  document.getElementById('statEntities').textContent = data.totalEntities;
+  document.getElementById('statFeedback').textContent = data.totalFeedback;
+  document.getElementById('statPositive').textContent = data.distribution.positive;
+  document.getElementById('statNeutral').textContent  = data.distribution.neutral;
+  document.getElementById('statNegative').textContent = data.distribution.negative;
+}
+
+const typeIcons  = { driver:'🚗', trip:'🗺️', app:'📱', marshal:'🦺' };
+const typeColors = { driver:'var(--cyan)', trip:'var(--purple)', app:'var(--amber)', marshal:'var(--green)' };
+
+function renderTypeBreakdown(byType) {
+  if (!byType) return;
+  const container = document.getElementById('typeBreakdown');
+  container.innerHTML = Object.entries(byType).map(([type, data]) => `
+    <div class="type-breakdown-card">
+      <div class="tbc-label" style="color:${typeColors[type]||'var(--text-dim)'};">${typeIcons[type]||'●'} ${type}</div>
+      <div class="tbc-value">${data.avgScore > 0 ? data.avgScore.toFixed(2) : '—'}</div>
+      <div class="tbc-sub">${data.count} review${data.count !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+}
+
+function scoreColor(avg) {
+  if (avg >= 3.5) return 'var(--green)';
+  if (avg <= 2.5) return 'var(--red)';
+  return 'var(--amber)';
+}
+
+function sentimentBadge(avg) {
+  if (avg >= 3.5) return '<span class="badge-sentiment badge-positive">positive</span>';
+  if (avg <= 2.5) return '<span class="badge-sentiment badge-negative">negative</span>';
+  return '<span class="badge-sentiment badge-neutral">neutral</span>';
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderLeaderboard(entities) {
+  const tbody = document.getElementById('leaderboardBody');
+  document.getElementById('leaderboardCount').textContent = entities ? `${entities.length} entities` : '';
+
+  if (!entities || entities.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>No data yet. Submit some feedback!</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = entities.map((e, i) => {
+    const pct = ((e.avg - 1) / 4 * 100).toFixed(1);
+    const color = scoreColor(e.avg);
+    return `<tr>
+      <td class="rank-num">${i + 1}</td>
+      <td><span class="badge-type badge-${e.entityType}">${e.entityType}</span></td>
+      <td class="mono" style="color:var(--text-bright);font-size:0.82rem;">${esc(e.entityId)}</td>
+      <td>
+        <div class="score-bar-wrap">
+          <span class="score-num" style="color:${color};">${e.avg.toFixed(2)}</span>
+          <div class="score-bar"><div class="score-fill" style="width:${pct}%;background:${color};"></div></div>
+        </div>
+      </td>
+      <td class="mono" style="font-size:0.82rem;">${e.count}</td>
+      <td>${sentimentBadge(e.avg)}</td>
+      <td><button class="trend-btn" onclick="loadTrend('${esc(e.entityType)}','${esc(e.entityId)}')">chart →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function setFilter(type, el) {
+  currentFilter = type;
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadAll();
+}
+
+function initCharts() {
+  Chart.defaults.color = '#5a6a85';
+  Chart.defaults.borderColor = '#1e2a3a';
+
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  pieChart = new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Positive', 'Neutral', 'Negative'],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: ['rgba(0,230,118,0.8)', 'rgba(255,171,0,0.8)', 'rgba(255,61,113,0.8)'],
+        borderColor: ['#00e676', '#ffab00', '#ff3d71'],
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      cutout: '68%',
+      plugins: {
+        legend: {
+          labels: { color: '#5a6a85', font: { family: 'Syne', size: 12 }, boxWidth: 12, padding: 16 }
+        }
+      }
+    }
+  });
+
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Score',
+        data: [],
+        borderColor: '#00d4ff',
+        backgroundColor: 'rgba(0,212,255,0.06)',
+        tension: 0.45,
+        fill: true,
+        pointBackgroundColor: '#00d4ff',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          min: 1, max: 5,
+          grid: { color: 'rgba(30,42,58,0.8)' },
+          ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 1 }
+        },
+        x: {
+          grid: { color: 'rgba(30,42,58,0.5)' },
+          ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 } }
+        }
+      },
+      plugins: { legend: { display: false } },
+      animation: { duration: 400 }
+    }
+  });
+}
+
+function updatePieChart(dist) {
+  if (!pieChart) return;
+  pieChart.data.datasets[0].data = [dist.positive, dist.neutral, dist.negative];
+  pieChart.update('none');
+}
+
+async function loadTrend(entityType, entityId) {
+  try {
+    const data = await apiFetch(`/admin/entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/trend`);
+    const label = `${typeIcons[entityType]||''} ${entityType}:${entityId}`;
+    document.getElementById('trendLabel').textContent = label;
+    lineChart.data.labels = data.trend.map((_, i) => `#${i + 1}`);
+    lineChart.data.datasets[0].data = data.trend;
+    lineChart.update();
+  } catch (e) {
+    console.error('Trend error:', e);
+  }
+}
+
+function clearTrend() {
+  document.getElementById('trendLabel').textContent = 'select an entity';
+  lineChart.data.labels = [];
+  lineChart.data.datasets[0].data = [];
+  lineChart.update();
+}
+</script>
+</body>
+</html>

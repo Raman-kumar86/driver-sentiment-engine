@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Feedback — Sentiment Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f2ee;
+      --surface: #ffffff;
+      --ink: #1a1410;
+      --ink-soft: #6b6259;
+      --accent: #c9520a;
+      --accent-light: #fdf0e8;
+      --border: #e2ddd8;
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --error: #991b1b;
+      --error-bg: #fee2e2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Decorative top stripe */
+    .top-stripe {
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #f59e42, var(--accent));
+    }
+
+    header {
+      padding: 2rem 2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .nav-link-admin {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .nav-link-admin:hover { color: var(--accent); border-color: var(--accent); }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .form-card h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+      line-height: 1.2;
+    }
+
+    .form-card .subtitle {
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.75rem 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.5rem;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+    }
+
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6259' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.9rem center; padding-right: 2.5rem; }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201,82,10,0.12);
+      background: #fff;
+    }
+
+    textarea { resize: vertical; min-height: 120px; }
+
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      text-align: right;
+      margin-top: 0.3rem;
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+      position: relative;
+    }
+
+    .submit-btn:hover:not(:disabled) { background: #a83f06; }
+    .submit-btn:active:not(:disabled) { transform: scale(0.99); }
+    .submit-btn:disabled { background: #d4a080; cursor: not-allowed; }
+
+    .submit-btn .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      position: absolute;
+      right: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .submit-btn.loading .spinner { display: block; }
+    .submit-btn.loading { padding-right: 3rem; }
+
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    .alert-box {
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      display: none;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .alert-box.show { display: flex; }
+    .alert-box.success { background: var(--success-bg); color: var(--success); border: 1px solid #bbf7d0; }
+    .alert-box.error { background: var(--error-bg); color: var(--error); border: 1px solid #fecaca; }
+    .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    .disabled-notice {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: #92400e;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .entity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 0.4rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-stripe"></div>
+
+<header class="d-flex align-items-center justify-content-between">
+  <div class="brand">Sentiment<span>.</span>Platform</div>
+  <a href="/dashboard.html" class="nav-link-admin">Admin Dashboard →</a>
+</header>
+
+<main>
+  <div class="form-card">
+    <h1>Submit Feedback</h1>
+    <p class="subtitle">Your experience matters — help us improve service quality.</p>
+
+    <div id="alertBox" class="alert-box">
+      <span class="alert-icon" id="alertIcon"></span>
+      <span id="alertMsg"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="entityType">Feedback Category</label>
+      <div id="disabledNotice" class="disabled-notice">
+        Some categories are currently disabled by administration.
+      </div>
+      <select id="entityType" onchange="onTypeChange()">
+        <option value="" disabled selected>Loading categories…</option>
+      </select>
+      <div id="entityBadge" style="display:none;" class="entity-badge"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="entityId" id="entityIdLabel">ID / Reference</label>
+      <input type="text" id="entityId" placeholder="e.g. DRV-001" />
+    </div>
+
+    <div class="form-divider"></div>
+
+    <div class="form-group">
+      <label for="comment">Your Comment</label>
+      <textarea id="comment" placeholder="Describe your experience in detail…" maxlength="1000" oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="charCount">0</span> / 1000</div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">
+      Submit Feedback
+      <div class="spinner"></div>
+    </button>
+  </div>
+</main>
+
+<footer>Feedback Sentiment Platform &mdash; Powered by Node.js + BullMQ + Redis</footer>
+
+<script>
+const API_KEY = 'supersecretapikey123'; // In production, read from session/meta tag
+
+const typeConfig = {
+  driver:  { label: 'Driver',       icon: '🚗', placeholder: 'e.g. DRV-001' },
+  trip:    { label: 'Trip',         icon: '🗺️', placeholder: 'e.g. TRIP-2091' },
+  app:     { label: 'Mobile App',   icon: '📱', placeholder: 'e.g. app-android' },
+  marshal: { label: 'Marshal',      icon: '🦺', placeholder: 'e.g. MSH-007' },
+};
+
+let enabledTypes = [];
+
+async function loadFeatureFlags() {
+  try {
+    const res = await fetch('/config/features');
+    const data = await res.json();
+    enabledTypes = data.enabledTypes || [];
+
+    const select = document.getElementById('entityType');
+    select.innerHTML = '';
+
+    const allTypes = Object.keys(typeConfig);
+    const hasDisabled = allTypes.some(t => !enabledTypes.includes(t));
+    if (hasDisabled) {
+      document.getElementById('disabledNotice').style.display = 'block';
+    }
+
+    if (enabledTypes.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.disabled = true;
+      opt.selected = true;
+      opt.textContent = 'No categories available';
+      select.appendChild(opt);
+      document.getElementById('submitBtn').disabled = true;
+      return;
+    }
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = 'Select a category…';
+    select.appendChild(placeholder);
+
+    enabledTypes.forEach(type => {
+      const cfg = typeConfig[type] || { label: type, icon: '●', placeholder: `Enter ${type} ID` };
+      const opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = `${cfg.icon}  ${cfg.label}`;
+      select.appendChild(opt);
+    });
+  } catch (e) {
+    showAlert('error', '⚠️ Failed to load categories. Please refresh the page.');
+  }
+}
+
+function onTypeChange() {
+  const type = document.getElementById('entityType').value;
+  const cfg = typeConfig[type];
+  if (!cfg) return;
+
+  document.getElementById('entityIdLabel').textContent = `${cfg.label} ID`;
+  document.getElementById('entityId').placeholder = cfg.placeholder;
+
+  const badge = document.getElementById('entityBadge');
+  badge.style.display = 'inline-flex';
+  badge.textContent = `${cfg.icon} ${cfg.label} Feedback`;
+
+  hideAlert();
+}
+
+function updateCharCount() {
+  const len = document.getElementById('comment').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+function showAlert(type, msg) {
+  const box = document.getElementById('alertBox');
+  const icon = document.getElementById('alertIcon');
+  const msgEl = document.getElementById('alertMsg');
+  box.className = `alert-box show ${type}`;
+  icon.textContent = type === 'success' ? '✓' : '✕';
+  msgEl.textContent = msg;
+}
+
+function hideAlert() {
+  document.getElementById('alertBox').className = 'alert-box';
+}
+
+async function submitFeedback() {
+  const entityType = document.getElementById('entityType').value;
+  const entityId   = document.getElementById('entityId').value.trim();
+  const comment    = document.getElementById('comment').value.trim();
+
+  hideAlert();
+
+  if (!entityType) { showAlert('error', 'Please select a feedback category.'); return; }
+  if (!entityId)   { showAlert('error', 'Please enter a valid ID.'); return; }
+  if (!comment)    { showAlert('error', 'Please write your comment before submitting.'); return; }
+  if (comment.length < 5) { showAlert('error', 'Comment is too short — please provide more detail.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.childNodes[0].textContent = 'Submitting…';
+
+  try {
+    const res = await fetch('/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+      body: JSON.stringify({ entityType, entityId, comment }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert('success', `Feedback submitted successfully! Reference ID: ${data.feedbackId}`);
+      document.getElementById('entityId').value = '';
+      document.getElementById('comment').value = '';
+      document.getElementById('charCount').textContent = '0';
+      document.getElementById('entityType').selectedIndex = 0;
+      document.getElementById('entityBadge').style.display = 'none';
+      document.getElementById('entityIdLabel').textContent = 'ID / Reference';
+    } else {
+      showAlert('error', data.error || 'Submission failed. Please try again.');
+    }
+  } catch (e) {
+    showAlert('error', 'Network error. Please check your connection.');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.childNodes[0].textContent = 'Submit Feedback';
+  }
+}
+
+loadFeatureFlags();
+</script>
+</body>
+</html>
