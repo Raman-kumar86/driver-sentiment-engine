@@ -2,21 +2,6 @@
 
 A multi-entity, async feedback sentiment analysis platform built with Node.js, TypeScript, Express, BullMQ, and Redis. Supports feedback for **Drivers**, **Trips**, **Mobile App**, and **Marshals** with a configurable feature flag system.
 
----
-
-## Screenshots
-
-### 📋 Feedback Form
-![Feedback Form](docs/screenshot-feedback.png)
-
-### 🖥️ Admin Dashboard
-![Admin Dashboard](docs/screenshot-dashboard.png)
-
-### 🔔 Low Rating Alert
-![Low Rating Alert Popup](docs/screenshot-alert.png)
-
----
-
 ## Architecture
 
 ```
@@ -335,3 +320,19 @@ driver-sentiment-engine/
 ├── .env.example
 └── README.md
 ```
+---
+
+## Screenshots
+
+### 📋 Feedback Form
+![Feedback Form](docs/Screenshot 2026-02-22 125935.png)
+
+### 🖥️ Admin Dashboard
+![Admin Dashboard](docs/Screenshot 2026-02-22 131714.png)
+
+### 🔔 Low Rating Alert
+![Low Rating Alert Popup](docs/Screenshot 2026-02-22 125753.png)
+### Secure Admin Panel
+![Secure Admin Panel](docs/Screenshot 2026-02-22 125849.png)
+
+---
