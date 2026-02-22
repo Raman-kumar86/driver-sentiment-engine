@@ -1,4 +1,4 @@
-# 🚦 Feedback Sentiment Platform
+# 🚦 Driver Sentiment Engine
 
 A multi-entity, async feedback sentiment analysis platform built with Node.js, TypeScript, Express, BullMQ, and Redis. Supports feedback for **Drivers**, **Trips**, **Mobile App**, and **Marshals** with a configurable feature flag system.
 
