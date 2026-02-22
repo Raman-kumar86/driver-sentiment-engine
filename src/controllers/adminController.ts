@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AnalyticsService } from "../services/AnalyticsService";
 import { EntityService } from "../services/EntityService";
 import { EntityType, ALL_ENTITY_TYPES } from "../config";
+import { normalizeEntityId } from "../utils/normalizer";
 
 const analyticsService = new AnalyticsService();
 const entityService = new EntityService();
@@ -25,7 +26,9 @@ export class AdminController {
   }
 
   async getEntityTrend(req: Request, res: Response): Promise<void> {
-    const { type, id } = req.params;
+    const { type } = req.params;
+    // Normalize the route param so lookups match the canonical Redis keys
+    const entityId = normalizeEntityId(req.params.id);
 
     if (!ALL_ENTITY_TYPES.includes(type as EntityType)) {
       res.status(400).json({ error: `Invalid entity type: ${type}` });
@@ -33,14 +36,15 @@ export class AdminController {
     }
 
     const entityType = type as EntityType;
-    const stats = await entityService.getStats(entityType, id);
+    const stats = await entityService.getStats(entityType, entityId);
 
     if (!stats) {
-      res.status(404).json({ error: `Entity ${type}:${id} not found` });
+      res.status(404).json({ error: `Entity ${type}:${entityId} not found` });
       return;
     }
 
-    const trend = await entityService.getTrend(entityType, id);
-    res.json({ entityType, entityId: id, stats, trend });
+    const trend = await entityService.getTrend(entityType, entityId);
+    res.json({ entityType, entityId, stats, trend });
   }
 }
+

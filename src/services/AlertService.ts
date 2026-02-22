@@ -1,16 +1,18 @@
 import { getRedis } from "../config/redis";
 import { config } from "../config";
 import { EntityType } from "../config";
+import { normalizeEntityId } from "../utils/normalizer";
 
 export class AlertService {
   private redis = getRedis();
 
   async checkAndAlert(
     entityType: EntityType,
-    entityId: string,
+    rawEntityId: string,
     avg: number,
     count: number
   ): Promise<void> {
+    const entityId = normalizeEntityId(rawEntityId);
     const { threshold, minReviews, cooldownTtl } = config.alert;
 
     if (avg >= threshold) return;
@@ -28,3 +30,4 @@ export class AlertService {
     await this.redis.set(cooldownKey, "1", "EX", cooldownTtl);
   }
 }
+

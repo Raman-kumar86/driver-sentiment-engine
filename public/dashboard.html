@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard — Sentiment Platform</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg:       #080b12;
-      --surface:  #0d1117;
+      --bg: #080b12;
+      --surface: #0d1117;
       --surface2: #131921;
       --surface3: #1a2233;
-      --border:   #1e2a3a;
-      --border2:  #253347;
-      --text:     #c9d4e8;
+      --border: #1e2a3a;
+      --border2: #253347;
+      --text: #c9d4e8;
       --text-dim: #5a6a85;
       --text-bright: #eaf0ff;
-      --cyan:     #00d4ff;
-      --green:    #00e676;
-      --amber:    #ffab00;
-      --red:      #ff3d71;
-      --purple:   #8b5cf6;
+      --cyan: #00d4ff;
+      --green: #00e676;
+      --amber: #ffab00;
+      --red: #ff3d71;
+      --purple: #8b5cf6;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Syne', sans-serif;
@@ -39,13 +46,11 @@
       content: '';
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,212,255,0.015) 2px,
-        rgba(0,212,255,0.015) 4px
-      );
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 212, 255, 0.015) 2px,
+          rgba(0, 212, 255, 0.015) 4px);
       pointer-events: none;
       z-index: 9999;
     }
@@ -66,7 +71,7 @@
       padding: 2.5rem;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 0 60px rgba(0,212,255,0.06);
+      box-shadow: 0 0 60px rgba(0, 212, 255, 0.06);
     }
 
     .auth-card h2 {
@@ -76,9 +81,15 @@
       margin-bottom: 0.3rem;
     }
 
-    .auth-card p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+    .auth-card p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+    }
 
-    .mono { font-family: 'JetBrains Mono', monospace; }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
 
     .inp {
       width: 100%;
@@ -94,7 +105,10 @@
       margin-bottom: 1rem;
     }
 
-    .inp:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
+    .inp:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
+    }
 
     .btn-primary-custom {
       width: 100%;
@@ -110,10 +124,14 @@
       transition: opacity 0.2s;
     }
 
-    .btn-primary-custom:hover { opacity: 0.88; }
+    .btn-primary-custom:hover {
+      opacity: 0.88;
+    }
 
     /* Dashboard layout */
-    #dashboard { display: none; }
+    #dashboard {
+      display: none;
+    }
 
     .topbar {
       background: var(--surface);
@@ -134,7 +152,9 @@
       letter-spacing: 0.05em;
     }
 
-    .logo .accent { color: var(--cyan); }
+    .logo .accent {
+      color: var(--cyan);
+    }
 
     .live-badge {
       display: flex;
@@ -146,21 +166,38 @@
     }
 
     .pulse-dot {
-      width: 7px; height: 7px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--green);
       animation: glow 1.8s ease-in-out infinite;
     }
 
     @keyframes glow {
-      0%,100% { box-shadow: 0 0 4px var(--green); opacity: 1; }
-      50% { box-shadow: 0 0 10px var(--green); opacity: 0.6; }
+
+      0%,
+      100% {
+        box-shadow: 0 0 4px var(--green);
+        opacity: 1;
+      }
+
+      50% {
+        box-shadow: 0 0 10px var(--green);
+        opacity: 0.6;
+      }
     }
 
-    .content { padding: 1.5rem; }
+    .content {
+      padding: 1.5rem;
+    }
 
     /* Stat cards */
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
 
     .stat-card {
       background: var(--surface);
@@ -174,18 +211,48 @@
     .stat-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 2px;
     }
 
-    .stat-card.c-cyan::before { background: var(--cyan); }
-    .stat-card.c-green::before { background: var(--green); }
-    .stat-card.c-amber::before { background: var(--amber); }
-    .stat-card.c-red::before { background: var(--red); }
-    .stat-card.c-purple::before { background: var(--purple); }
+    .stat-card.c-cyan::before {
+      background: var(--cyan);
+    }
 
-    .stat-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem; }
-    .stat-value { font-size: 2rem; font-weight: 800; color: var(--text-bright); line-height: 1; font-family: 'JetBrains Mono', monospace; }
+    .stat-card.c-green::before {
+      background: var(--green);
+    }
+
+    .stat-card.c-amber::before {
+      background: var(--amber);
+    }
+
+    .stat-card.c-red::before {
+      background: var(--red);
+    }
+
+    .stat-card.c-purple::before {
+      background: var(--purple);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
     /* Type tabs */
     .type-tabs {
@@ -208,12 +275,30 @@
       letter-spacing: 0.03em;
     }
 
-    .type-tab:hover { border-color: var(--border2); color: var(--text); }
-    .type-tab.active { background: var(--surface3); border-color: var(--cyan); color: var(--cyan); }
+    .type-tab:hover {
+      border-color: var(--border2);
+      color: var(--text);
+    }
+
+    .type-tab.active {
+      background: var(--surface3);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
 
     /* Panel grid */
-    .panel-grid { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; margin-bottom: 1rem; }
-    @media (max-width: 900px) { .panel-grid { grid-template-columns: 1fr; } }
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .panel-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .panel {
       background: var(--surface);
@@ -237,11 +322,36 @@
     }
 
     /* Table */
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 0.6rem 1rem; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; border-bottom: 1px solid var(--border); text-align: left; }
-    td { padding: 0.7rem 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface2); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      padding: 0.6rem 1rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    td {
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--surface2);
+    }
 
     .badge-type {
       display: inline-block;
@@ -254,10 +364,25 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .badge-driver  { background: rgba(0,212,255,0.12); color: var(--cyan); }
-    .badge-trip    { background: rgba(139,92,246,0.15); color: var(--purple); }
-    .badge-app     { background: rgba(255,171,0,0.12); color: var(--amber); }
-    .badge-marshal { background: rgba(0,230,118,0.12); color: var(--green); }
+    .badge-driver {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--cyan);
+    }
+
+    .badge-trip {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--purple);
+    }
+
+    .badge-app {
+      background: rgba(255, 171, 0, 0.12);
+      color: var(--amber);
+    }
+
+    .badge-marshal {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--green);
+    }
 
     .badge-sentiment {
       display: inline-block;
@@ -267,14 +392,47 @@
       font-weight: 700;
     }
 
-    .badge-positive { background: rgba(0,230,118,0.12); color: var(--green); }
-    .badge-neutral  { background: rgba(255,171,0,0.12); color: var(--amber); }
-    .badge-negative { background: rgba(255,61,113,0.12); color: var(--red); }
+    .badge-positive {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--green);
+    }
 
-    .score-bar-wrap { display: flex; align-items: center; gap: 0.6rem; }
-    .score-num { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.88rem; min-width: 2.5rem; }
-    .score-bar { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-    .score-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .badge-neutral {
+      background: rgba(255, 171, 0, 0.12);
+      color: var(--amber);
+    }
+
+    .badge-negative {
+      background: rgba(255, 61, 113, 0.12);
+      color: var(--red);
+    }
+
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .score-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.88rem;
+      min-width: 2.5rem;
+    }
+
+    .score-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--surface3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
 
     .trend-btn {
       background: none;
@@ -288,10 +446,17 @@
       transition: background 0.15s;
     }
 
-    .trend-btn:hover { background: rgba(0,212,255,0.08); }
+    .trend-btn:hover {
+      background: rgba(0, 212, 255, 0.08);
+    }
 
     /* Charts */
-    .chart-panel { padding: 1rem; display: flex; align-items: center; justify-content: center; }
+    .chart-panel {
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .trend-panel-full {
       background: var(--surface);
@@ -316,231 +481,710 @@
       padding: 1rem;
     }
 
-    .type-breakdown-card .tbc-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem; }
-    .type-breakdown-card .tbc-value { font-size: 1.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--text-bright); }
-    .type-breakdown-card .tbc-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.2rem; }
+    .type-breakdown-card .tbc-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
 
-    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 0.85rem; }
-    .empty-state .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .type-breakdown-card .tbc-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-bright);
+    }
 
-    #lastUpdated { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); }
+    .type-breakdown-card .tbc-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
 
-    .rank-num { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.8rem; }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .empty-state .icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #lastUpdated {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .rank-num {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+
+    /* ── LOW-RATING ROW HIGHLIGHT ──────────────────────────────────────── */
+    .row-low-rating td {
+      background: rgba(255, 61, 113, 0.04) !important;
+    }
+
+    /* ── BELL BUTTON ─────────────────────────────────────────────────── */
+    .bell-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text-dim);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: border-color 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .bell-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .bell-btn.has-alerts {
+      border-color: var(--red);
+      color: var(--red);
+      animation: bellShake 0.55s ease;
+    }
+
+    @keyframes bellShake {
+
+      0%,
+      100% {
+        transform: rotate(0);
+      }
+
+      20% {
+        transform: rotate(-12deg);
+      }
+
+      40% {
+        transform: rotate(12deg);
+      }
+
+      60% {
+        transform: rotate(-7deg);
+      }
+
+      80% {
+        transform: rotate(7deg);
+      }
+    }
+
+    .bell-count {
+      display: none;
+      background: var(--red);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.06rem 0.38rem;
+      min-width: 1.2rem;
+      text-align: center;
+    }
+
+    .bell-btn.has-alerts .bell-count {
+      display: inline-block;
+    }
+
+    /* ── ALERT MODAL ─────────────────────────────────────────────────── */
+    .alert-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .alert-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .alert-modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 0 80px rgba(255, 61, 113, 0.15), 0 8px 32px rgba(0, 0, 0, 0.6);
+      transform: translateY(18px) scale(0.97);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+    }
+
+    .alert-backdrop.open .alert-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .alert-modal-header {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .alert-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: rgba(255, 61, 113, 0.12);
+      border: 1px solid rgba(255, 61, 113, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .alert-modal-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .alert-modal-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .alert-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.15s;
+      line-height: 1;
+      margin-left: auto;
+    }
+
+    .alert-close-btn:hover {
+      color: var(--red);
+    }
+
+    .alert-modal-body {
+      padding: 1rem 1.25rem;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    /* Threshold slider row */
+    .threshold-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+    }
+
+    .threshold-row label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      flex: 1;
+      margin: 0;
+    }
+
+    .threshold-row input[type="range"] {
+      width: 120px;
+      cursor: pointer;
+      accent-color: var(--red);
+    }
+
+    .threshold-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--red);
+      min-width: 2.5rem;
+      text-align: right;
+    }
+
+    /* Alert entity list */
+    .alert-entity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .alert-entity-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 61, 113, 0.2);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      animation: rowIn 0.2s ease;
+    }
+
+    @keyframes rowIn {
+      from {
+        opacity: 0;
+        transform: translateX(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .ae-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .ae-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-bright);
+    }
+
+    .ae-type {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .ae-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .ae-reviews {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .alert-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .alert-empty .ae-ok {
+      font-size: 2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .alert-modal-footer {
+      padding: 0.9rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .footer-note {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .btn-dismiss {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 0.5rem 1.1rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-dismiss:hover {
+      opacity: 0.85;
+    }
+
+    /* ── TOAST ───────────────────────────────────────────────────────── */
+    #toastContainer {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.6rem;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      background: var(--surface);
+      border: 1px solid rgba(255, 61, 113, 0.35);
+      border-left: 3px solid var(--red);
+      border-radius: 9px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      min-width: 270px;
+      max-width: 340px;
+      pointer-events: all;
+      animation: toastIn 0.3s ease;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .toast-item.removing {
+      animation: toastOut 0.25s ease forwards;
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+    }
+
+    .toast-emoji {
+      font-size: 1rem;
+      line-height: 1.45;
+      flex-shrink: 0;
+    }
+
+    .toast-body {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 0.15rem;
+    }
+
+    .toast-msg {
+      font-size: 0.73rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
   </style>
 </head>
+
 <body>
 
-<!-- Auth -->
-<div id="authScreen">
-  <div class="auth-card">
-    <h2>Admin Console</h2>
-    <p>Feedback Sentiment Platform — Enter your API key to continue.</p>
-    <input type="password" class="inp" id="apiKeyInput" placeholder="x-api-key" onkeydown="if(event.key==='Enter')initDashboard()" />
-    <button class="btn-primary-custom" onclick="initDashboard()">Access Dashboard</button>
-  </div>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboard">
-
-  <div class="topbar">
-    <div class="logo">SENTIMENT<span class="accent">.</span>PLATFORM</div>
-    <div class="d-flex align-items-center gap-3">
-      <span id="lastUpdated"></span>
-      <div class="live-badge">
-        <div class="pulse-dot"></div>
-        LIVE · 5s
-      </div>
-      <a href="/index.html" style="font-size:0.75rem;color:var(--text-dim);text-decoration:none;">← Submit Feedback</a>
+  <!-- Auth -->
+  <div id="authScreen">
+    <div class="auth-card">
+      <h2>Admin Console</h2>
+      <p>Feedback Sentiment Platform — Enter your API key to continue.</p>
+      <input type="password" class="inp" id="apiKeyInput" placeholder="x-api-key"
+        onkeydown="if(event.key==='Enter')initDashboard()" />
+      <button class="btn-primary-custom" onclick="initDashboard()">Access Dashboard</button>
     </div>
   </div>
 
-  <div class="content">
+  <!-- Dashboard -->
+  <div id="dashboard">
 
-    <!-- Stat Cards -->
-    <div class="stat-grid">
-      <div class="stat-card c-cyan">
-        <div class="stat-label">Total Entities</div>
-        <div class="stat-value" id="statEntities">—</div>
-      </div>
-      <div class="stat-card c-green">
-        <div class="stat-label">Total Feedback</div>
-        <div class="stat-value" id="statFeedback">—</div>
-      </div>
-      <div class="stat-card c-green">
-        <div class="stat-label">Positive</div>
-        <div class="stat-value" id="statPositive">—</div>
-      </div>
-      <div class="stat-card c-amber">
-        <div class="stat-label">Neutral</div>
-        <div class="stat-value" id="statNeutral">—</div>
-      </div>
-      <div class="stat-card c-red">
-        <div class="stat-label">Negative</div>
-        <div class="stat-value" id="statNegative">—</div>
+    <div class="topbar">
+      <div class="logo">SENTIMENT<span class="accent">.</span>PLATFORM</div>
+      <div class="d-flex align-items-center gap-3">
+        <span id="lastUpdated"></span>
+        <div class="live-badge">
+          <div class="pulse-dot"></div>
+          LIVE · 5s
+        </div>
+        <!-- Alert Bell -->
+        <button class="bell-btn" id="bellBtn" onclick="openAlertModal()" title="Low-rating driver alerts">
+          🔔 <span class="bell-count" id="bellCount">0</span>
+        </button>
+        <a href="/index.html" style="font-size:0.75rem;color:var(--text-dim);text-decoration:none;">← Submit
+          Feedback</a>
       </div>
     </div>
 
-    <!-- Type Breakdown -->
-    <div class="type-breakdown" id="typeBreakdown"></div>
+    <div class="content">
 
-    <!-- Type Filter Tabs -->
-    <div class="type-tabs" id="typeTabs">
-      <div class="type-tab active" data-type="all" onclick="setFilter('all', this)">All Types</div>
-      <div class="type-tab" data-type="driver"  onclick="setFilter('driver', this)">🚗 Driver</div>
-      <div class="type-tab" data-type="trip"    onclick="setFilter('trip', this)">🗺️ Trip</div>
-      <div class="type-tab" data-type="app"     onclick="setFilter('app', this)">📱 App</div>
-      <div class="type-tab" data-type="marshal" onclick="setFilter('marshal', this)">🦺 Marshal</div>
-    </div>
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card c-cyan">
+          <div class="stat-label">Total Entities</div>
+          <div class="stat-value" id="statEntities">—</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-label">Total Feedback</div>
+          <div class="stat-value" id="statFeedback">—</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-label">Positive</div>
+          <div class="stat-value" id="statPositive">—</div>
+        </div>
+        <div class="stat-card c-amber">
+          <div class="stat-label">Neutral</div>
+          <div class="stat-value" id="statNeutral">—</div>
+        </div>
+        <div class="stat-card c-red">
+          <div class="stat-label">Negative</div>
+          <div class="stat-value" id="statNegative">—</div>
+        </div>
+      </div>
 
-    <!-- Leaderboard + Pie Chart -->
-    <div class="panel-grid">
-      <div class="panel">
+      <!-- Type Breakdown -->
+      <div class="type-breakdown" id="typeBreakdown"></div>
+
+      <!-- Type Filter Tabs -->
+      <div class="type-tabs" id="typeTabs">
+        <div class="type-tab active" data-type="all" onclick="setFilter('all', this)">All Types</div>
+        <div class="type-tab" data-type="driver" onclick="setFilter('driver', this)">🚗 Driver</div>
+        <div class="type-tab" data-type="trip" onclick="setFilter('trip', this)">🗺️ Trip</div>
+        <div class="type-tab" data-type="app" onclick="setFilter('app', this)">📱 App</div>
+        <div class="type-tab" data-type="marshal" onclick="setFilter('marshal', this)">🦺 Marshal</div>
+      </div>
+
+      <!-- Leaderboard + Pie Chart -->
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span>Entity Leaderboard</span>
+            <span id="leaderboardCount" style="font-weight:400;font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+          <div style="overflow:auto; max-height:420px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Type</th>
+                  <th>Entity ID</th>
+                  <th>Avg Score</th>
+                  <th>Reviews</th>
+                  <th>Sentiment</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody">
+                <tr>
+                  <td colspan="7">
+                    <div class="empty-state">
+                      <div class="icon">⏳</div>Loading...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">Sentiment Distribution</div>
+          <div class="chart-panel" style="min-height:280px;">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trend Chart -->
+      <div class="trend-panel-full">
         <div class="panel-header">
-          <span>Entity Leaderboard</span>
-          <span id="leaderboardCount" style="font-weight:400;font-family:'JetBrains Mono',monospace;">—</span>
+          <span>Score Trend — <span id="trendLabel"
+              style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">select an
+              entity</span></span>
+          <button onclick="clearTrend()"
+            style="background:none;border:1px solid var(--border2);color:var(--text-dim);border-radius:5px;padding:0.2rem 0.6rem;font-size:0.7rem;cursor:pointer;">Clear</button>
         </div>
-        <div style="overflow:auto; max-height:420px;">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Type</th>
-                <th>Entity ID</th>
-                <th>Avg Score</th>
-                <th>Reviews</th>
-                <th>Sentiment</th>
-                <th>Trend</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-              <tr><td colspan="7"><div class="empty-state"><div class="icon">⏳</div>Loading...</div></td></tr>
-            </tbody>
-          </table>
+        <div style="padding:1rem;">
+          <canvas id="lineChart" style="max-height:180px;"></canvas>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">Sentiment Distribution</div>
-        <div class="chart-panel" style="min-height:280px;">
-          <canvas id="pieChart"></canvas>
-        </div>
-      </div>
     </div>
-
-    <!-- Trend Chart -->
-    <div class="trend-panel-full">
-      <div class="panel-header">
-        <span>Score Trend — <span id="trendLabel" style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">select an entity</span></span>
-        <button onclick="clearTrend()" style="background:none;border:1px solid var(--border2);color:var(--text-dim);border-radius:5px;padding:0.2rem 0.6rem;font-size:0.7rem;cursor:pointer;">Clear</button>
-      </div>
-      <div style="padding:1rem;">
-        <canvas id="lineChart" style="max-height:180px;"></canvas>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-let API_KEY = '';
-let pieChart = null;
-let lineChart = null;
-let refreshTimer = null;
-let currentFilter = 'all';
+  <!-- ── LOW-RATING ALERT MODAL ──────────────────────────────────────────── -->
+  <div class="alert-backdrop" id="alertBackdrop" onclick="handleBackdropClick(event)">
+    <div class="alert-modal">
+      <div class="alert-modal-header">
+        <div class="alert-icon-wrap">⚠️</div>
+        <div style="flex:1;">
+          <div class="alert-modal-title">Low Rating Alert</div>
+          <div class="alert-modal-sub" id="alertModalSub">Checking…</div>
+        </div>
+        <button class="alert-close-btn" onclick="closeAlertModal()" title="Close">✕</button>
+      </div>
 
-function initDashboard() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) return alert('Please enter your API key');
-  API_KEY = key;
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-  initCharts();
-  loadAll();
-  refreshTimer = setInterval(loadAll, 5000);
-}
+      <div class="alert-modal-body">
+        <!-- Threshold control -->
+        <div class="threshold-row">
+          <label for="thresholdSlider">Alert Threshold</label>
+          <input type="range" id="thresholdSlider" min="1" max="5" step="0.5" value="3"
+            oninput="onThresholdChange(this.value)" />
+          <span class="threshold-val" id="thresholdDisplay">3.0</span>
+        </div>
 
-function apiFetch(url) {
-  return fetch(url, { headers: { 'x-api-key': API_KEY } }).then(r => {
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-  });
-}
+        <!-- Offending drivers list -->
+        <div class="alert-entity-list" id="alertEntityList">
+          <div class="alert-empty">
+            <div class="ae-ok">✅</div>All drivers are above threshold.
+          </div>
+        </div>
+      </div>
 
-async function loadAll() {
-  try {
-    const typeParam = currentFilter !== 'all' ? `?type=${currentFilter}` : '';
-    const [overview, entitiesResp] = await Promise.all([
-      apiFetch('/admin/overview'),
-      apiFetch(`/admin/entities${typeParam}`)
-    ]);
+      <div class="alert-modal-footer">
+        <span class="footer-note">Auto-refreshes every 5 s</span>
+        <button class="btn-dismiss" onclick="closeAlertModal()">Dismiss</button>
+      </div>
+    </div>
+  </div>
 
-    renderStats(overview);
-    renderTypeBreakdown(overview.byType);
-    renderLeaderboard(entitiesResp.entities);
-    updatePieChart(overview.distribution);
-    document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
-  } catch (e) {
-    console.error('Refresh error:', e);
-    if (e.message.includes('401')) {
-      clearInterval(refreshTimer);
-      alert('Invalid API key.');
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+  <script>
+    let API_KEY = '';
+    let pieChart = null;
+    let lineChart = null;
+    let refreshTimer = null;
+    let currentFilter = 'all';
+
+    // ── Alert state ──────────────────────────────────────────────────────────
+    let alertThreshold = 3.0;       // configurable via slider (default 3.0)
+    let alertedKeys = new Set(); // entities already shown a toast this session
+    let latestAlerts = [];        // current list of below-threshold drivers
+
+    // ── Boot ─────────────────────────────────────────────────────────────────
+    function initDashboard() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) return alert('Please enter your API key');
+      API_KEY = key;
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      initCharts();
+      loadAll();
+      refreshTimer = setInterval(loadAll, 5000);
     }
-  }
-}
 
-function renderStats(data) {
-  document.getElementById('statEntities').textContent = data.totalEntities;
-  document.getElementById('statFeedback').textContent = data.totalFeedback;
-  document.getElementById('statPositive').textContent = data.distribution.positive;
-  document.getElementById('statNeutral').textContent  = data.distribution.neutral;
-  document.getElementById('statNegative').textContent = data.distribution.negative;
-}
+    function apiFetch(url) {
+      return fetch(url, { headers: { 'x-api-key': API_KEY } }).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      });
+    }
 
-const typeIcons  = { driver:'🚗', trip:'🗺️', app:'📱', marshal:'🦺' };
-const typeColors = { driver:'var(--cyan)', trip:'var(--purple)', app:'var(--amber)', marshal:'var(--green)' };
+    async function loadAll() {
+      try {
+        const typeParam = currentFilter !== 'all' ? `?type=${currentFilter}` : '';
+        const [overview, entitiesResp] = await Promise.all([
+          apiFetch('/admin/overview'),
+          apiFetch(`/admin/entities${typeParam}`)
+        ]);
+        renderStats(overview);
+        renderTypeBreakdown(overview.byType);
+        renderLeaderboard(entitiesResp.entities);
+        updatePieChart(overview.distribution);
+        document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+      } catch (e) {
+        console.error('Refresh error:', e);
+        if (e.message.includes('401')) {
+          clearInterval(refreshTimer);
+          alert('Invalid API key.');
+        }
+      }
+    }
 
-function renderTypeBreakdown(byType) {
-  if (!byType) return;
-  const container = document.getElementById('typeBreakdown');
-  container.innerHTML = Object.entries(byType).map(([type, data]) => `
+    // ── Stats ─────────────────────────────────────────────────────────────────
+    function renderStats(data) {
+      document.getElementById('statEntities').textContent = data.totalEntities;
+      document.getElementById('statFeedback').textContent = data.totalFeedback;
+      document.getElementById('statPositive').textContent = data.distribution.positive;
+      document.getElementById('statNeutral').textContent = data.distribution.neutral;
+      document.getElementById('statNegative').textContent = data.distribution.negative;
+    }
+
+    const typeIcons = { driver: '🚗', trip: '🗺️', app: '📱', marshal: '🦺' };
+    const typeColors = { driver: 'var(--cyan)', trip: 'var(--purple)', app: 'var(--amber)', marshal: 'var(--green)' };
+
+    function renderTypeBreakdown(byType) {
+      if (!byType) return;
+      const container = document.getElementById('typeBreakdown');
+      container.innerHTML = Object.entries(byType).map(([type, data]) => `
     <div class="type-breakdown-card">
-      <div class="tbc-label" style="color:${typeColors[type]||'var(--text-dim)'};">${typeIcons[type]||'●'} ${type}</div>
+      <div class="tbc-label" style="color:${typeColors[type] || 'var(--text-dim)'};">${typeIcons[type] || '●'} ${type}</div>
       <div class="tbc-value">${data.avgScore > 0 ? data.avgScore.toFixed(2) : '—'}</div>
       <div class="tbc-sub">${data.count} review${data.count !== 1 ? 's' : ''}</div>
     </div>
   `).join('');
-}
+    }
 
-function scoreColor(avg) {
-  if (avg >= 3.5) return 'var(--green)';
-  if (avg <= 2.5) return 'var(--red)';
-  return 'var(--amber)';
-}
+    function scoreColor(avg) {
+      if (avg >= 3.5) return 'var(--green)';
+      if (avg <= 2.5) return 'var(--red)';
+      return 'var(--amber)';
+    }
 
-function sentimentBadge(avg) {
-  if (avg >= 3.5) return '<span class="badge-sentiment badge-positive">positive</span>';
-  if (avg <= 2.5) return '<span class="badge-sentiment badge-negative">negative</span>';
-  return '<span class="badge-sentiment badge-neutral">neutral</span>';
-}
+    function sentimentBadge(avg) {
+      if (avg >= 3.5) return '<span class="badge-sentiment badge-positive">positive</span>';
+      if (avg <= 2.5) return '<span class="badge-sentiment badge-negative">negative</span>';
+      return '<span class="badge-sentiment badge-neutral">neutral</span>';
+    }
 
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
 
-function renderLeaderboard(entities) {
-  const tbody = document.getElementById('leaderboardBody');
-  document.getElementById('leaderboardCount').textContent = entities ? `${entities.length} entities` : '';
+    // ── Leaderboard ────────────────────────────────────────────────────────────
+    function renderLeaderboard(entities) {
+      const tbody = document.getElementById('leaderboardBody');
+      document.getElementById('leaderboardCount').textContent = entities ? `${entities.length} entities` : '';
 
-  if (!entities || entities.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>No data yet. Submit some feedback!</div></td></tr>`;
-    return;
-  }
+      if (!entities || entities.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div>No data yet. Submit some feedback!</div></td></tr>`;
+        checkLowRatings([]);
+        return;
+      }
 
-  tbody.innerHTML = entities.map((e, i) => {
-    const pct = ((e.avg - 1) / 4 * 100).toFixed(1);
-    const color = scoreColor(e.avg);
-    return `<tr>
+      tbody.innerHTML = entities.map((e, i) => {
+        const pct = ((e.avg - 1) / 4 * 100).toFixed(1);
+        const color = scoreColor(e.avg);
+        const isLow = e.entityType === 'driver' && e.avg < alertThreshold;
+        const rowCls = isLow ? ' class="row-low-rating"' : '';
+        return `<tr${rowCls}>
       <td class="rank-num">${i + 1}</td>
       <td><span class="badge-type badge-${e.entityType}">${e.entityType}</span></td>
       <td class="mono" style="color:var(--text-bright);font-size:0.82rem;">${esc(e.entityId)}</td>
@@ -554,103 +1198,208 @@ function renderLeaderboard(entities) {
       <td>${sentimentBadge(e.avg)}</td>
       <td><button class="trend-btn" onclick="loadTrend('${esc(e.entityType)}','${esc(e.entityId)}')">chart →</button></td>
     </tr>`;
-  }).join('');
-}
+      }).join('');
 
-function setFilter(type, el) {
-  currentFilter = type;
-  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  loadAll();
-}
+      checkLowRatings(entities);
+    }
 
-function initCharts() {
-  Chart.defaults.color = '#5a6a85';
-  Chart.defaults.borderColor = '#1e2a3a';
+    // ── Low-rating alert logic ─────────────────────────────────────────────────
+    function checkLowRatings(entities) {
+      // Only alert for drivers below threshold (extend filter to include others if needed)
+      latestAlerts = entities.filter(e => e.entityType === 'driver' && e.avg < alertThreshold);
 
-  const pieCtx = document.getElementById('pieChart').getContext('2d');
-  pieChart = new Chart(pieCtx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Positive', 'Neutral', 'Negative'],
-      datasets: [{
-        data: [0, 0, 0],
-        backgroundColor: ['rgba(0,230,118,0.8)', 'rgba(255,171,0,0.8)', 'rgba(255,61,113,0.8)'],
-        borderColor: ['#00e676', '#ffab00', '#ff3d71'],
-        borderWidth: 1,
-      }]
-    },
-    options: {
-      cutout: '68%',
-      plugins: {
-        legend: {
-          labels: { color: '#5a6a85', font: { family: 'Syne', size: 12 }, boxWidth: 12, padding: 16 }
+      const bell = document.getElementById('bellBtn');
+      const count = document.getElementById('bellCount');
+
+      if (latestAlerts.length > 0) {
+        bell.classList.add('has-alerts');
+        count.textContent = latestAlerts.length;
+      } else {
+        bell.classList.remove('has-alerts');
+        count.textContent = '0';
+      }
+
+      // Fire a toast for each newly-detected driver (once per session per entity)
+      latestAlerts.forEach(e => {
+        const key = `${e.entityType}:${e.entityId}`;
+        if (!alertedKeys.has(key)) {
+          alertedKeys.add(key);
+          showToast(
+            `🚗 Driver ${e.entityId} — Low Rating`,
+            `Avg: ${e.avg.toFixed(2)}  ·  threshold: ${alertThreshold.toFixed(1)}  ·  ${e.count} review${e.count !== 1 ? 's' : ''}`
+          );
         }
+      });
+
+      // Keep modal fresh if it's open
+      if (document.getElementById('alertBackdrop').classList.contains('open')) {
+        renderAlertList();
       }
     }
-  });
 
-  const lineCtx = document.getElementById('lineChart').getContext('2d');
-  lineChart = new Chart(lineCtx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Score',
-        data: [],
-        borderColor: '#00d4ff',
-        backgroundColor: 'rgba(0,212,255,0.06)',
-        tension: 0.45,
-        fill: true,
-        pointBackgroundColor: '#00d4ff',
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        borderWidth: 2,
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          min: 1, max: 5,
-          grid: { color: 'rgba(30,42,58,0.8)' },
-          ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 1 }
-        },
-        x: {
-          grid: { color: 'rgba(30,42,58,0.5)' },
-          ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 } }
-        }
-      },
-      plugins: { legend: { display: false } },
-      animation: { duration: 400 }
+    function renderAlertList() {
+      const list = document.getElementById('alertEntityList');
+      const sub = document.getElementById('alertModalSub');
+
+      if (latestAlerts.length === 0) {
+        list.innerHTML = `<div class="alert-empty"><div class="ae-ok">✅</div>All drivers are above the ${alertThreshold.toFixed(1)} threshold.</div>`;
+        sub.textContent = 'No issues detected';
+        return;
+      }
+
+      sub.textContent = `${latestAlerts.length} driver${latestAlerts.length > 1 ? 's' : ''} below threshold · ${new Date().toLocaleTimeString()}`;
+      list.innerHTML = [...latestAlerts]
+        .sort((a, b) => a.avg - b.avg)
+        .map(e => `
+      <div class="alert-entity-row">
+        <span class="ae-icon">🚗</span>
+        <div style="flex:1;">
+          <div class="ae-id">${esc(e.entityId)}</div>
+          <div class="ae-type">driver</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ae-score">${e.avg.toFixed(2)}</div>
+          <div class="ae-reviews">${e.count} review${e.count !== 1 ? 's' : ''}</div>
+        </div>
+      </div>
+    `).join('');
     }
-  });
-}
 
-function updatePieChart(dist) {
-  if (!pieChart) return;
-  pieChart.data.datasets[0].data = [dist.positive, dist.neutral, dist.negative];
-  pieChart.update('none');
-}
+    function openAlertModal() {
+      renderAlertList();
+      document.getElementById('alertBackdrop').classList.add('open');
+    }
 
-async function loadTrend(entityType, entityId) {
-  try {
-    const data = await apiFetch(`/admin/entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/trend`);
-    const label = `${typeIcons[entityType]||''} ${entityType}:${entityId}`;
-    document.getElementById('trendLabel').textContent = label;
-    lineChart.data.labels = data.trend.map((_, i) => `#${i + 1}`);
-    lineChart.data.datasets[0].data = data.trend;
-    lineChart.update();
-  } catch (e) {
-    console.error('Trend error:', e);
-  }
-}
+    function closeAlertModal() {
+      document.getElementById('alertBackdrop').classList.remove('open');
+    }
 
-function clearTrend() {
-  document.getElementById('trendLabel').textContent = 'select an entity';
-  lineChart.data.labels = [];
-  lineChart.data.datasets[0].data = [];
-  lineChart.update();
-}
-</script>
+    function handleBackdropClick(e) {
+      if (e.target === document.getElementById('alertBackdrop')) closeAlertModal();
+    }
+
+    function onThresholdChange(val) {
+      alertThreshold = parseFloat(val);
+      document.getElementById('thresholdDisplay').textContent = alertThreshold.toFixed(1);
+      alertedKeys.clear(); // reset so we re-toast newly-breaching drivers
+      loadAll();           // immediate re-evaluation
+    }
+
+    // ── Toast helper ──────────────────────────────────────────────────────────
+    function showToast(title, msg, duration = 6000) {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast-item';
+      el.innerHTML = `
+    <span class="toast-emoji">🚨</span>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${msg}</div>
+    </div>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('removing');
+        setTimeout(() => el.remove(), 280);
+      }, duration);
+    }
+
+    // ── Filter tabs ───────────────────────────────────────────────────────────
+    function setFilter(type, el) {
+      currentFilter = type;
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      loadAll();
+    }
+
+    // ── Charts ────────────────────────────────────────────────────────────────
+    function initCharts() {
+      Chart.defaults.color = '#5a6a85';
+      Chart.defaults.borderColor = '#1e2a3a';
+
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Positive', 'Neutral', 'Negative'],
+          datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: ['rgba(0,230,118,0.8)', 'rgba(255,171,0,0.8)', 'rgba(255,61,113,0.8)'],
+            borderColor: ['#00e676', '#ffab00', '#ff3d71'],
+            borderWidth: 1,
+          }]
+        },
+        options: {
+          cutout: '68%',
+          plugins: {
+            legend: {
+              labels: { color: '#5a6a85', font: { family: 'Syne', size: 12 }, boxWidth: 12, padding: 16 }
+            }
+          }
+        }
+      });
+
+      const lineCtx = document.getElementById('lineChart').getContext('2d');
+      lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Score',
+            data: [],
+            borderColor: '#00d4ff',
+            backgroundColor: 'rgba(0,212,255,0.06)',
+            tension: 0.45,
+            fill: true,
+            pointBackgroundColor: '#00d4ff',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              min: 1, max: 5,
+              grid: { color: 'rgba(30,42,58,0.8)' },
+              ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 1 }
+            },
+            x: {
+              grid: { color: 'rgba(30,42,58,0.5)' },
+              ticks: { color: '#5a6a85', font: { family: 'JetBrains Mono', size: 10 } }
+            }
+          },
+          plugins: { legend: { display: false } },
+          animation: { duration: 400 }
+        }
+      });
+    }
+
+    function updatePieChart(dist) {
+      if (!pieChart) return;
+      pieChart.data.datasets[0].data = [dist.positive, dist.neutral, dist.negative];
+      pieChart.update('none');
+    }
+
+    async function loadTrend(entityType, entityId) {
+      try {
+        const data = await apiFetch(`/admin/entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/trend`);
+        const label = `${typeIcons[entityType] || ''} ${entityType}:${entityId}`;
+        document.getElementById('trendLabel').textContent = label;
+        lineChart.data.labels = data.trend.map((_, i) => `#${i + 1}`);
+        lineChart.data.datasets[0].data = data.trend;
+        lineChart.update();
+      } catch (e) {
+        console.error('Trend error:', e);
+      }
+    }
+
+    function clearTrend() {
+      document.getElementById('trendLabel').textContent = 'select an entity';
+      lineChart.data.labels = [];
+      lineChart.data.datasets[0].data = [];
+      lineChart.update();
+    }
+  </script>
 </body>
+
 </html>

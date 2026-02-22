@@ -1,30 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submit Feedback — Sentiment Platform</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ── THEME  (mirrors dashboard palette) ─────────────────────────────── */
     :root {
-      --bg: #f5f2ee;
-      --surface: #ffffff;
-      --ink: #1a1410;
-      --ink-soft: #6b6259;
-      --accent: #c9520a;
-      --accent-light: #fdf0e8;
-      --border: #e2ddd8;
-      --success: #166534;
-      --success-bg: #dcfce7;
-      --error: #991b1b;
-      --error-bg: #fee2e2;
+      --bg: #0d1117;
+      /* dashboard page background            */
+      --surface: #161b22;
+      /* dashboard card surface               */
+      --surface-2: #1c2333;
+      /* slightly lighter card variant        */
+      --border: #30363d;
+      /* dashboard card borders               */
+      --ink: #e6edf3;
+      /* primary text                         */
+      --ink-mid: #8b949e;
+      /* secondary text                       */
+      --ink-soft: #484f58;
+      /* muted / labels                       */
+      --accent: #58a6ff;
+      /* cyan-blue – dashboard header colour  */
+      --accent-glow: rgba(88, 166, 255, 0.15);
+      --accent-dark: #388bfd;
+      --green: #3fb950;
+      /* neon green – dashboard "positive"    */
+      --green-glow: rgba(63, 185, 80, 0.15);
+      --green-border: rgba(63, 185, 80, 0.3);
+      --orange: #d29922;
+      /* dashboard "neutral" amber            */
+      --red: #f85149;
+      /* dashboard "negative"                 */
+      --success-bg: rgba(63, 185, 80, 0.08);
+      --error-bg: rgba(248, 81, 73, 0.08);
+      --radius-card: 10px;
+      --radius-input: 8px;
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg);
       color: var(--ink);
       min-height: 100vh;
@@ -32,399 +63,712 @@
       flex-direction: column;
     }
 
-    /* Decorative top stripe */
-    .top-stripe {
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), #f59e42, var(--accent));
+    /* ── TOP ACCENT BAR ─────────────────────────────────────────────────── */
+    .top-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--green), var(--accent));
     }
 
+    /* ── HEADER ────────────────────────────────────────────────────────── */
     header {
-      padding: 2rem 2rem 1.5rem;
-      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
       background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .brand {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      color: var(--ink);
-      letter-spacing: -0.01em;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
     }
 
-    .brand span { color: var(--accent); }
+    .brand .dot {
+      color: var(--green);
+    }
 
-    .nav-link-admin {
-      font-size: 0.85rem;
-      color: var(--ink-soft);
+    .nav-admin {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink-mid);
       text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: color 0.18s, border-color 0.18s, background 0.18s;
     }
 
-    .nav-link-admin:hover { color: var(--accent); border-color: var(--accent); }
+    .nav-admin:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
 
+    .nav-admin svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    /* ── HERO ───────────────────────────────────────────────────────────── */
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 3rem 2rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 90% at 15% 50%, rgba(88, 166, 255, 0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 70% at 85% 30%, rgba(63, 185, 80, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      color: var(--accent);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-badge .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.18;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 0.9rem;
+      color: var(--ink-mid);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── MAIN (gap between hero and form card) ──────────────────────────── */
     main {
       flex: 1;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 3rem 1rem;
+      padding: 2.5rem 1.25rem 3rem;
+      /* top padding = gap after hero */
     }
 
+    /* ── FORM CARD ───────────────────────────────────────────────────────── */
     .form-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
       width: 100%;
-      max-width: 520px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      max-width: 550px;
+      padding: 2.25rem 2.25rem 1.75rem;
     }
 
-    .form-card h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.9rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.35rem;
-      line-height: 1.2;
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .form-card .subtitle {
-      color: var(--ink-soft);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
+    .card-title .icon {
+      font-size: 1rem;
     }
 
-    .form-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 1.75rem 0;
+    .card-sub {
+      font-size: 0.82rem;
+      color: var(--ink-mid);
+      margin-bottom: 1.75rem;
+      line-height: 1.55;
+    }
+
+    /* ── ALERTS ─────────────────────────────────────────────────────────── */
+    .alert-box {
+      display: none;
+      align-items: flex-start;
+      gap: 0.7rem;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      animation: slideIn 0.22s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-box.show {
+      display: flex;
+    }
+
+    .alert-box.success {
+      background: var(--success-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+    }
+
+    .alert-box.error {
+      background: var(--error-bg);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+      color: var(--red);
+    }
+
+    .alert-icon {
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      line-height: 1.55;
+    }
+
+    .alert-msg {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .alert-ref {
+      display: inline-block;
+      margin-top: 0.3rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.77rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      padding: 0.15rem 0.55rem;
+      background: rgba(63, 185, 80, 0.12);
+      border: 1px solid var(--green-border);
+      border-radius: 5px;
+      color: var(--green);
+      user-select: all;
+      cursor: text;
+    }
+
+    /* ── FORM ELEMENTS ───────────────────────────────────────────────────── */
+    .form-group {
+      margin-bottom: 1.35rem;
     }
 
     label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--ink-soft);
-      margin-bottom: 0.5rem;
+      color: var(--ink-mid);
+      margin-bottom: 0.45rem;
     }
 
-    select, input, textarea {
+    select,
+    input[type="text"],
+    textarea {
       width: 100%;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-input);
       padding: 0.75rem 1rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
       color: var(--ink);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      appearance: none;
-      -webkit-appearance: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
       outline: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6259' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.9rem center; padding-right: 2.5rem; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.6rem;
+      cursor: pointer;
+    }
 
-    select:focus, input:focus, textarea:focus {
+    select:focus,
+    input:focus,
+    textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(201,82,10,0.12);
-      background: #fff;
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    textarea { resize: vertical; min-height: 120px; }
+    select option {
+      background: var(--surface-2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.65;
+    }
+
+    ::placeholder {
+      color: var(--ink-soft);
+    }
 
     .char-count {
-      font-size: 0.75rem;
-      color: var(--ink-soft);
       text-align: right;
-      margin-top: 0.3rem;
+      font-size: 0.7rem;
+      color: var(--ink-mid);
+      margin-top: 0.35rem;
     }
 
-    .form-group { margin-bottom: 1.25rem; }
+    .char-count.warn {
+      color: var(--orange);
+    }
 
+    /* ── ENTITY BADGE ────────────────────────────────────────────────────── */
+    .entity-badge {
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0.22rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      width: fit-content;
+    }
+
+    /* ── DISABLED NOTICE ─────────────────────────────────────────────────── */
+    .disabled-notice {
+      display: none;
+      background: rgba(210, 153, 34, 0.08);
+      border: 1px solid rgba(210, 153, 34, 0.3);
+      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.78rem;
+      color: var(--orange);
+      margin-bottom: 0.85rem;
+    }
+
+    /* ── DIVIDER ─────────────────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0.1rem 0 1.35rem;
+      color: var(--ink-soft);
+      font-size: 0.68rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── SUBMIT BUTTON ───────────────────────────────────────────────────── */
     .submit-btn {
       width: 100%;
       background: var(--accent);
-      color: white;
+      color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius-input);
       padding: 0.85rem 1.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
       font-weight: 600;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 0.5rem;
       position: relative;
+      transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
+      box-shadow: 0 2px 14px rgba(88, 166, 255, 0.25);
+      margin-top: 0.2rem;
+      overflow: hidden;
     }
 
-    .submit-btn:hover:not(:disabled) { background: #a83f06; }
-    .submit-btn:active:not(:disabled) { transform: scale(0.99); }
-    .submit-btn:disabled { background: #d4a080; cursor: not-allowed; }
-
-    .submit-btn .spinner {
-      display: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+    .submit-btn::before {
+      content: '';
       position: absolute;
-      right: 1.2rem;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform 0.55s ease;
+    }
+
+    .submit-btn:hover:not(:disabled)::before {
+      transform: translateX(120%);
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: var(--accent-dark);
+      box-shadow: 0 4px 22px rgba(88, 166, 255, 0.4);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .submit-btn:disabled {
+      background: #21262d;
+      color: var(--ink-soft);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      position: absolute;
+      right: 1.25rem;
       top: 50%;
       transform: translateY(-50%);
     }
 
-    .submit-btn.loading .spinner { display: block; }
-    .submit-btn.loading { padding-right: 3rem; }
-
-    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
-
-    .alert-box {
-      border-radius: 8px;
-      padding: 0.9rem 1rem;
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-      display: none;
-      align-items: flex-start;
-      gap: 0.6rem;
+    .submit-btn.loading .spinner {
+      display: block;
     }
 
-    .alert-box.show { display: flex; }
-    .alert-box.success { background: var(--success-bg); color: var(--success); border: 1px solid #bbf7d0; }
-    .alert-box.error { background: var(--error-bg); color: var(--error); border: 1px solid #fecaca; }
-    .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-
-    .disabled-notice {
-      background: #fef3c7;
-      border: 1px solid #fde68a;
-      border-radius: 6px;
-      padding: 0.6rem 0.9rem;
-      font-size: 0.8rem;
-      color: #92400e;
-      margin-bottom: 1rem;
-      display: none;
+    .submit-btn.loading {
+      padding-right: 3rem;
     }
 
-    .entity-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 20px;
-      padding: 0.25rem 0.7rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      margin-top: 0.4rem;
+    @keyframes spin {
+      to {
+        transform: translateY(-50%) rotate(360deg);
+      }
     }
 
+    /* ── FOOTER ─────────────────────────────────────────────────────────── */
     footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.78rem;
-      color: var(--ink-soft);
       border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      color: var(--ink-mid);
+    }
+
+    footer .sep {
+      color: var(--border);
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
+    @media (max-width: 580px) {
+      header {
+        padding: 0 1.25rem;
+      }
+
+      .hero {
+        padding: 2.25rem 1.25rem;
+      }
+
+      .form-card {
+        padding: 1.6rem 1.25rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<div class="top-stripe"></div>
+  <div class="top-bar"></div>
 
-<header class="d-flex align-items-center justify-content-between">
-  <div class="brand">Sentiment<span>.</span>Platform</div>
-  <a href="/dashboard.html" class="nav-link-admin">Admin Dashboard →</a>
-</header>
+  <header>
+    <div class="brand">Sentiment<span class="dot">.</span>Platform</div>
+    <a href="/dashboard.html" class="nav-admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+      </svg>
+      Admin Dashboard
+    </a>
+  </header>
 
-<main>
-  <div class="form-card">
-    <h1>Submit Feedback</h1>
-    <p class="subtitle">Your experience matters — help us improve service quality.</p>
-
-    <div id="alertBox" class="alert-box">
-      <span class="alert-icon" id="alertIcon"></span>
-      <span id="alertMsg"></span>
-    </div>
-
-    <div class="form-group">
-      <label for="entityType">Feedback Category</label>
-      <div id="disabledNotice" class="disabled-notice">
-        Some categories are currently disabled by administration.
+  <!-- HERO — "Share Your Experience" -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="live-dot"></span>
+        Live Feedback Portal
       </div>
-      <select id="entityType" onchange="onTypeChange()">
-        <option value="" disabled selected>Loading categories…</option>
-      </select>
-      <div id="entityBadge" style="display:none;" class="entity-badge"></div>
+      <h1>Share Your <span>Experience</span></h1>
+      <p>Your feedback helps us improve service quality for drivers, trips, marshals, and the app.</p>
     </div>
+  </section>
 
-    <div class="form-group">
-      <label for="entityId" id="entityIdLabel">ID / Reference</label>
-      <input type="text" id="entityId" placeholder="e.g. DRV-001" />
+  <!-- GAP IS PROVIDED BY main's top padding (2.5 rem) -->
+  <main>
+    <div class="form-card">
+
+      <div class="card-title"><span class="icon">📋</span> Submit Feedback</div>
+      <div class="card-sub">Fill in the details below and let us know how we're doing.</div>
+
+      <div id="alertBox" class="alert-box">
+        <span class="alert-icon" id="alertIcon"></span>
+        <span class="alert-msg" id="alertMsg"></span>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="entityType">Feedback Category</label>
+        <div id="disabledNotice" class="disabled-notice">
+          ⚠ Some categories are currently disabled by administration.
+        </div>
+        <select id="entityType" onchange="onTypeChange()">
+          <option value="" disabled selected>Loading categories…</option>
+        </select>
+        <div id="entityBadge" class="entity-badge"></div>
+      </div>
+
+      <!-- ID -->
+      <div class="form-group">
+        <label for="entityId" id="entityIdLabel">ID / Reference</label>
+        <input type="text" id="entityId" placeholder="e.g. DRV-001" autocomplete="off" />
+      </div>
+
+      <div class="divider">comment</div>
+
+      <!-- Comment -->
+      <div class="form-group">
+        <label for="comment">Your Comment</label>
+        <textarea id="comment" placeholder="Describe your experience in detail…" maxlength="1000"
+          oninput="updateCharCount()"></textarea>
+        <div class="char-count" id="charCountWrap">
+          <span id="charCount">0</span> / 1000
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">
+        Submit Feedback
+        <div class="spinner"></div>
+      </button>
+
     </div>
+  </main>
 
-    <div class="form-divider"></div>
+  <footer>
+    <span>© 2026 Sentiment Platform</span>
+    <span class="sep">·</span>
+    <span>Powered by Node.js + BullMQ + Redis</span>
+  </footer>
 
-    <div class="form-group">
-      <label for="comment">Your Comment</label>
-      <textarea id="comment" placeholder="Describe your experience in detail…" maxlength="1000" oninput="updateCharCount()"></textarea>
-      <div class="char-count"><span id="charCount">0</span> / 1000</div>
-    </div>
+  <script>
+    const API_KEY = 'supersecretapikey123';
 
-    <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">
-      Submit Feedback
-      <div class="spinner"></div>
-    </button>
-  </div>
-</main>
+    const typeConfig = {
+      driver: { label: 'Driver', icon: '🚗', placeholder: 'e.g. DRV-001' },
+      trip: { label: 'Trip', icon: '🗺️', placeholder: 'e.g. TRIP-2091' },
+      app: { label: 'Mobile App', icon: '📱', placeholder: 'e.g. app-android' },
+      marshal: { label: 'Marshal', icon: '🦺', placeholder: 'e.g. MSH-007' },
+    };
 
-<footer>Feedback Sentiment Platform &mdash; Powered by Node.js + BullMQ + Redis</footer>
+    let enabledTypes = [];
 
-<script>
-const API_KEY = 'supersecretapikey123'; // In production, read from session/meta tag
+    async function loadFeatureFlags() {
+      try {
+        const res = await fetch('/config/features');
+        const data = await res.json();
+        enabledTypes = data.enabledTypes || [];
 
-const typeConfig = {
-  driver:  { label: 'Driver',       icon: '🚗', placeholder: 'e.g. DRV-001' },
-  trip:    { label: 'Trip',         icon: '🗺️', placeholder: 'e.g. TRIP-2091' },
-  app:     { label: 'Mobile App',   icon: '📱', placeholder: 'e.g. app-android' },
-  marshal: { label: 'Marshal',      icon: '🦺', placeholder: 'e.g. MSH-007' },
-};
+        const select = document.getElementById('entityType');
+        const allTypes = Object.keys(typeConfig);
+        select.innerHTML = '';
 
-let enabledTypes = [];
+        if (allTypes.some(t => !enabledTypes.includes(t)))
+          document.getElementById('disabledNotice').style.display = 'block';
 
-async function loadFeatureFlags() {
-  try {
-    const res = await fetch('/config/features');
-    const data = await res.json();
-    enabledTypes = data.enabledTypes || [];
+        if (enabledTypes.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = ''; opt.disabled = true; opt.selected = true;
+          opt.textContent = 'No categories available';
+          select.appendChild(opt);
+          document.getElementById('submitBtn').disabled = true;
+          return;
+        }
 
-    const select = document.getElementById('entityType');
-    select.innerHTML = '';
+        const ph = document.createElement('option');
+        ph.value = ''; ph.disabled = true; ph.selected = true;
+        ph.textContent = 'Select a category…';
+        select.appendChild(ph);
 
-    const allTypes = Object.keys(typeConfig);
-    const hasDisabled = allTypes.some(t => !enabledTypes.includes(t));
-    if (hasDisabled) {
-      document.getElementById('disabledNotice').style.display = 'block';
+        enabledTypes.forEach(type => {
+          const cfg = typeConfig[type] || { label: type, icon: '●', placeholder: `Enter ${type} ID` };
+          const opt = document.createElement('option');
+          opt.value = type;
+          opt.textContent = `${cfg.icon}  ${cfg.label}`;
+          select.appendChild(opt);
+        });
+      } catch {
+        showAlert('error', 'Failed to load categories. Please refresh the page.');
+      }
     }
 
-    if (enabledTypes.length === 0) {
-      const opt = document.createElement('option');
-      opt.value = '';
-      opt.disabled = true;
-      opt.selected = true;
-      opt.textContent = 'No categories available';
-      select.appendChild(opt);
-      document.getElementById('submitBtn').disabled = true;
-      return;
+    function onTypeChange() {
+      const type = document.getElementById('entityType').value;
+      const cfg = typeConfig[type];
+      if (!cfg) return;
+      document.getElementById('entityIdLabel').textContent = `${cfg.label} ID`;
+      document.getElementById('entityId').placeholder = cfg.placeholder;
+      const badge = document.getElementById('entityBadge');
+      badge.style.display = 'inline-flex';
+      badge.textContent = `${cfg.icon}  ${cfg.label} Feedback`;
+      hideAlert();
     }
 
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    placeholder.textContent = 'Select a category…';
-    select.appendChild(placeholder);
-
-    enabledTypes.forEach(type => {
-      const cfg = typeConfig[type] || { label: type, icon: '●', placeholder: `Enter ${type} ID` };
-      const opt = document.createElement('option');
-      opt.value = type;
-      opt.textContent = `${cfg.icon}  ${cfg.label}`;
-      select.appendChild(opt);
-    });
-  } catch (e) {
-    showAlert('error', '⚠️ Failed to load categories. Please refresh the page.');
-  }
-}
-
-function onTypeChange() {
-  const type = document.getElementById('entityType').value;
-  const cfg = typeConfig[type];
-  if (!cfg) return;
-
-  document.getElementById('entityIdLabel').textContent = `${cfg.label} ID`;
-  document.getElementById('entityId').placeholder = cfg.placeholder;
-
-  const badge = document.getElementById('entityBadge');
-  badge.style.display = 'inline-flex';
-  badge.textContent = `${cfg.icon} ${cfg.label} Feedback`;
-
-  hideAlert();
-}
-
-function updateCharCount() {
-  const len = document.getElementById('comment').value.length;
-  document.getElementById('charCount').textContent = len;
-}
-
-function showAlert(type, msg) {
-  const box = document.getElementById('alertBox');
-  const icon = document.getElementById('alertIcon');
-  const msgEl = document.getElementById('alertMsg');
-  box.className = `alert-box show ${type}`;
-  icon.textContent = type === 'success' ? '✓' : '✕';
-  msgEl.textContent = msg;
-}
-
-function hideAlert() {
-  document.getElementById('alertBox').className = 'alert-box';
-}
-
-async function submitFeedback() {
-  const entityType = document.getElementById('entityType').value;
-  const entityId   = document.getElementById('entityId').value.trim();
-  const comment    = document.getElementById('comment').value.trim();
-
-  hideAlert();
-
-  if (!entityType) { showAlert('error', 'Please select a feedback category.'); return; }
-  if (!entityId)   { showAlert('error', 'Please enter a valid ID.'); return; }
-  if (!comment)    { showAlert('error', 'Please write your comment before submitting.'); return; }
-  if (comment.length < 5) { showAlert('error', 'Comment is too short — please provide more detail.'); return; }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.classList.add('loading');
-  btn.childNodes[0].textContent = 'Submitting…';
-
-  try {
-    const res = await fetch('/feedback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-      },
-      body: JSON.stringify({ entityType, entityId, comment }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showAlert('success', `Feedback submitted successfully! Reference ID: ${data.feedbackId}`);
-      document.getElementById('entityId').value = '';
-      document.getElementById('comment').value = '';
-      document.getElementById('charCount').textContent = '0';
-      document.getElementById('entityType').selectedIndex = 0;
-      document.getElementById('entityBadge').style.display = 'none';
-      document.getElementById('entityIdLabel').textContent = 'ID / Reference';
-    } else {
-      showAlert('error', data.error || 'Submission failed. Please try again.');
+    function updateCharCount() {
+      const len = document.getElementById('comment').value.length;
+      const wrap = document.getElementById('charCountWrap');
+      document.getElementById('charCount').textContent = len;
+      wrap.className = 'char-count' + (len > 850 ? ' warn' : '');
     }
-  } catch (e) {
-    showAlert('error', 'Network error. Please check your connection.');
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.childNodes[0].textContent = 'Submit Feedback';
-  }
-}
 
-loadFeatureFlags();
-</script>
+    function showAlert(type, msg, refId) {
+      const box = document.getElementById('alertBox');
+      const icon = document.getElementById('alertIcon');
+      const msgEl = document.getElementById('alertMsg');
+      box.className = `alert-box show ${type}`;
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      msgEl.innerHTML = '';
+      msgEl.appendChild(document.createTextNode(msg));
+      if (refId) {
+        msgEl.innerHTML += '<br>';
+        const ref = document.createElement('span');
+        ref.className = 'alert-ref';
+        ref.title = 'Reference ID — click to select';
+        ref.textContent = refId;
+        msgEl.appendChild(ref);
+      }
+    }
+
+    function hideAlert() {
+      document.getElementById('alertBox').className = 'alert-box';
+    }
+
+    async function submitFeedback() {
+      const entityType = document.getElementById('entityType').value;
+      const entityId = document.getElementById('entityId').value.trim();
+      const comment = document.getElementById('comment').value.trim();
+      hideAlert();
+
+      if (!entityType) { showAlert('error', 'Please select a feedback category.'); return; }
+      if (!entityId) { showAlert('error', 'Please enter a valid ID.'); return; }
+      if (!comment) { showAlert('error', 'Please write your comment before submitting.'); return; }
+      if (comment.length < 5) { showAlert('error', 'Comment is too short — please provide more detail.'); return; }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.childNodes[0].textContent = 'Submitting…';
+
+      try {
+        const res = await fetch('/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+          body: JSON.stringify({ entityType, entityId, comment }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showAlert('success', 'Feedback submitted successfully! Reference ID:', data.feedbackId);
+          document.getElementById('entityId').value = '';
+          document.getElementById('comment').value = '';
+          document.getElementById('charCount').textContent = '0';
+          document.getElementById('charCountWrap').className = 'char-count';
+          document.getElementById('entityType').selectedIndex = 0;
+          document.getElementById('entityBadge').style.display = 'none';
+          document.getElementById('entityIdLabel').textContent = 'ID / Reference';
+        } else {
+          showAlert('error', data.error || 'Submission failed. Please try again.');
+        }
+      } catch {
+        showAlert('error', 'Network error. Please check your connection.');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.childNodes[0].textContent = 'Submit Feedback';
+      }
+    }
+
+    loadFeatureFlags();
+  </script>
 </body>
+
 </html>

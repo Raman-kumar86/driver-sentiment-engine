@@ -1,6 +1,19 @@
-# 🚦 Feedback Sentiment Platform v2
+# 🚦 Feedback Sentiment Platform
 
 A multi-entity, async feedback sentiment analysis platform built with Node.js, TypeScript, Express, BullMQ, and Redis. Supports feedback for **Drivers**, **Trips**, **Mobile App**, and **Marshals** with a configurable feature flag system.
+
+---
+
+## Screenshots
+
+### 📋 Feedback Form
+![Feedback Form](docs/screenshot-feedback.png)
+
+### 🖥️ Admin Dashboard
+![Admin Dashboard](docs/screenshot-dashboard.png)
+
+### 🔔 Low Rating Alert
+![Low Rating Alert Popup](docs/screenshot-alert.png)
 
 ---
 

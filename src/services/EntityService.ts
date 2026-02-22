@@ -1,5 +1,6 @@
 import { getRedis } from "../config/redis";
 import { EntityType } from "../config";
+import { normalizeEntityId } from "../utils/normalizer";
 
 const TREND_MAX = 20;
 
@@ -23,9 +24,10 @@ export class EntityService {
 
   async updateStats(
     entityType: EntityType,
-    entityId: string,
+    rawEntityId: string,
     newScore: number
   ): Promise<EntityStats> {
+    const entityId = normalizeEntityId(rawEntityId);
     const { avg: avgKey, count: countKey, trend: trendKey } = this.keys(entityType, entityId);
 
     const newCount = await this.redis.incr(countKey);
@@ -42,7 +44,8 @@ export class EntityService {
     return { entityType, entityId, avg: roundedAvg, count: newCount };
   }
 
-  async getStats(entityType: EntityType, entityId: string): Promise<EntityStats | null> {
+  async getStats(entityType: EntityType, rawEntityId: string): Promise<EntityStats | null> {
+    const entityId = normalizeEntityId(rawEntityId);
     const { avg: avgKey, count: countKey } = this.keys(entityType, entityId);
     const countStr = await this.redis.get(countKey);
     if (!countStr) return null;
@@ -55,7 +58,8 @@ export class EntityService {
     };
   }
 
-  async getTrend(entityType: EntityType, entityId: string): Promise<number[]> {
+  async getTrend(entityType: EntityType, rawEntityId: string): Promise<number[]> {
+    const entityId = normalizeEntityId(rawEntityId);
     const { trend: trendKey } = this.keys(entityType, entityId);
     const raw = await this.redis.lrange(trendKey, 0, -1);
     return raw.map((v) => parseFloat(v));
@@ -63,6 +67,7 @@ export class EntityService {
 
   /**
    * Find all entity IDs for a given type by scanning count:entityType:* keys.
+   * Keys in Redis are already stored under normalized IDs, so no extra normalization needed here.
    */
   async getEntityIdsByType(entityType: EntityType): Promise<string[]> {
     const prefix = `count:${entityType}:`;
@@ -90,3 +95,4 @@ export class EntityService {
     return result === 0;
   }
 }
+

@@ -5,13 +5,17 @@ import { FeedbackJobData } from "./feedbackQueue";
 import { SentimentService } from "../services/SentimentService";
 import { EntityService } from "../services/EntityService";
 import { AlertService } from "../services/AlertService";
+import { normalizeEntityId } from "../utils/normalizer";
 
 const sentimentService = new SentimentService();
 const entityService = new EntityService();
 const alertService = new AlertService();
 
 async function processFeedback(job: Job<FeedbackJobData>): Promise<void> {
-  const { entityType, entityId, feedbackId, comment } = job.data;
+  const { entityType, feedbackId, comment } = job.data;
+  // Normalize here as a safety net — the controller already normalizes, but
+  // this protects against queue entries injected by tests or external tools.
+  const entityId = normalizeEntityId(job.data.entityId);
 
   console.log(
     `[Worker] Job ${job.id} | type=${entityType} entity=${entityId} feedback=${feedbackId}`

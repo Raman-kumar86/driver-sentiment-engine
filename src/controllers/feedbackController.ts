@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from "crypto";
 import { getFeedbackQueue } from "../queue/feedbackQueue";
 import { isEntityTypeEnabled, config, getEnabledEntityTypes } from "../config";
+import { normalizeEntityId } from "../utils/normalizer";
 
 export class FeedbackController {
   async submit(req: Request, res: Response): Promise<void> {
-    const { entityType, entityId, comment } = req.body;
+    const { entityType, comment } = req.body;
+    // Normalize early so the canonical ID is used everywhere below
+    const entityId = normalizeEntityId(String(req.body.entityId ?? ""));
 
     if (!entityType || !entityId || !comment) {
       res.status(400).json({
@@ -28,6 +30,7 @@ export class FeedbackController {
     }
 
     // Generate a unique feedbackId for dedup (callers may also pass one)
+    // Uses the normalized entityId so IDs like "001" and "1" share the same dedup key
     const feedbackId = req.body.feedbackId || `${entityType}-${entityId}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
     const queue = getFeedbackQueue();
