@@ -324,15 +324,16 @@ driver-sentiment-engine/
 
 ## Screenshots
 
-### 📋 Feedback Form
-![Feedback Form](docs/Screenshot 2026-02-22 125935.png)
+### �️ Admin Dashboard
+![Admin Dashboard](docs/screenshot-dashboard.png)
 
-### 🖥️ Admin Dashboard
-![Admin Dashboard](docs/Screenshot 2026-02-22 131714.png)
+### � Feedback Form — Category Selection
+![Feedback Form](docs/screenshot-feedback-form.png)
 
-### 🔔 Low Rating Alert
-![Low Rating Alert Popup](docs/Screenshot 2026-02-22 125753.png)
-### Secure Admin Panel
-![Secure Admin Panel](docs/Screenshot 2026-02-22 125849.png)
+### 🔔 Low Rating Alert Popup
+![Low Rating Alert](docs/screenshot-alert.png)
+
+### 🔐 Admin Console Login
+![Admin Login](docs/screenshot-login.png)
 
 ---
