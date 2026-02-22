@@ -1,5 +1,4 @@
 import { Queue } from "bullmq";
-import { createRedisConnection } from "../config/redis";
 import { config, EntityType } from "../config";
 
 export interface FeedbackJobData {
@@ -15,7 +14,11 @@ let feedbackQueue: Queue<FeedbackJobData> | null = null;
 export function getFeedbackQueue(): Queue<FeedbackJobData> {
   if (!feedbackQueue) {
     feedbackQueue = new Queue<FeedbackJobData>(config.queue.name, {
-      connection: createRedisConnection(),
+      connection: {
+        host: config.redis.host,
+        port: config.redis.port,
+        maxRetriesPerRequest: null,
+      },
       defaultJobOptions: {
         attempts: 3,
         backoff: { type: "exponential", delay: 1000 },
@@ -24,5 +27,5 @@ export function getFeedbackQueue(): Queue<FeedbackJobData> {
       },
     });
   }
-  return feedbackQueue;
+  return feedbackQueue!;
 }

@@ -1,5 +1,4 @@
 import { Worker, Job } from "bullmq";
-import { createRedisConnection } from "../config/redis";
 import { config } from "../config";
 import { FeedbackJobData } from "./feedbackQueue";
 import { SentimentService } from "../services/SentimentService";
@@ -48,7 +47,11 @@ const worker = new Worker<FeedbackJobData>(
   config.queue.name,
   processFeedback,
   {
-    connection: createRedisConnection(),
+    connection: {
+      host: config.redis.host,
+      port: config.redis.port,
+      maxRetriesPerRequest: null,
+    },
     concurrency: 5,
   }
 );
